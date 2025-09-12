@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    
+<style>
+    body {
+        background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(44, 62, 80, 0.2);
+        padding: 32px;
+    }
+    h1 {
+        text-align: center;
+        color: #2980b9;
+    }
+    form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+    input[type="text"] {
+        padding: 10px;
+        border-radius: 8px 0 0 8px;
+        border: 1px solid #2980b9;
+        outline: none;
+        width: 70%;
+    }
+    button {
+        padding: 10px 20px;
+        border-radius: 0 8px 8px 0;
+        border: none;
+        background: #2980b9;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .cards-row {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .card {
+        background: #f0f6fc;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+        padding: 24px;
+        margin-bottom: 24px;
+        flex: 1 1 300px;
+        min-width: 300px;
+        max-width: 350px;
+        box-sizing: border-box;
+    }
+    .weather {
+        text-align: center;
+    }
+    .weather img {
+        width: 80px;
+    }
+    .forecast-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .forecast-item {
+        display: flex;
+        align-items: center;
+        background: #eaf1fb;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .forecast-item img {
+        width: 40px;
+        margin-right: 16px;
+    }
+    .history-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .history-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #dbeafe;
+        color: #2980b9;
+    }
+    .error {
+        color: #e74c3c;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <h1>Weather App</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+    {% if error %}
+        <div class="error card">{{ error }}</div>
+    {% else %}
+        <div class="cards-row">
+            {% if city %}
+            <div class="card weather">
+                <h2>{{ city|title }}</h2>
+                <img src="http://openweathermap.org/img/wn/{{ icon }}@2x.png" alt="Weather icon">
+                <p><strong>{{ temperature }}°C</strong></p>
+                <p>{{ description|title }}</p>
+                <p>Humidity: {{ humidity }}%</p>
+            </div>
+            {% endif %}
+            {% if forecast %}
+            <div class="card forecast">
+                <h3>Three Days Forecast</h3>
+                <div class="forecast-list">
+                    {% for item in forecast %}
+                    <div class="forecast-item">
+                        <img src="http://openweathermap.org/img/wn/{{ item.icon }}.png" alt="icon">
+                        <div>
+                            <strong>{{ item.date }}</strong><br>
+                            {{ item.temp }}°C, {{ item.desc|title }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% if history %}
+            <div class="card">
+                <h3>Recent Search History</h3>
+                <ul class="history-list">
+                    {% for h in history %}
+                    <li>{{ h }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
